@@ -1,0 +1,52 @@
+EXPERIMENT_NAME: "cloud_segmentation_with_UNet"
+
+MODEL:
+  PY: segmentation_models_pytorch
+  ARCH: Unet
+  ARGS:
+    encoder_name: "efficientnet-b6"
+    classes: 1
+    encoder_weights: "imagenet"
+
+OPTIMIZER:
+  PY: torch.optim
+  CLASS: Adam
+  ARGS:
+    lr: 0.0001
+    weight_decay: 0.0001
+    betas: [0.1, 0.9]
+
+GRADIENT_ACCUMULATION_STEPS: 4
+GRADIENT_CLIPPING: 0.1
+
+SCHEDULER:
+  PY: torch.optim.lr_scheduler
+  CLASS: CosineAnnealingWarmRestarts
+  ARGS:
+    T_0: 1
+    T_mult: 2
+
+BATCH_SIZE: 16
+NUM_WORKERS: 4
+EPOCHS: 200
+
+EARLY_STOPPING:
+  ENABLE: True
+  ARGS:
+    monitor: 'iou_score'
+    min_delta: 0.00
+    patience: 10
+    verbose: True
+    mode: 'max'
+
+CHECKPOINT:
+  ARGS:
+    save_top_k: 1
+    verbose: True
+    monitor: 'iou_score'
+    mode: 'max'
+    filename: "best_model"
+
+SEED: 42
+GPUS: [0]
+
